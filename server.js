@@ -8,6 +8,7 @@ const eventRoutes = require('./routes/event.routes');
 const eventCategoryRoutes = require('./routes/eventCategory.routes');
 const notificationRoutes = require('./routes/notifications.routes');
 const eventRatingsRoutes = require('./routes/eventRatings.routes');
+const userFavoritesRoutes = require('./routes/userFavorites.routes');
 
 // configure dotenv
 dotenv.config();
@@ -28,6 +29,7 @@ app.use('/api/v1/event', eventRoutes);
 app.use('/api/v1/event_categories', eventCategoryRoutes);
 app.use('/api/v1/notifications', notificationRoutes);
 app.use('/api/v1/event_ratings', eventRatingsRoutes);
+app.use('/api/v1/user_favorites', userFavoritesRoutes);
 
 app.get('/', (req, res) => {
     res.send('<h1>Welcome to The Event Locator App</h1>');
