@@ -61,8 +61,8 @@ const getUsersByID = async (req, res) => {
 // CREATE USER
 const createUser = async (req, res) => {
     try {
-        const { username, email, password_hash, location, registration_date, last_login, preferred_language, preferred_categories } = req.body;
-        if (!username || !email || !password_hash || !location || !registration_date || !last_login ||!preferred_language || !preferred_categories) {
+        const { username, email, password, location, registration_date, last_login, preferred_language, preferred_categories } = req.body;
+        if (!username || !email || !password || !location || !registration_date || !last_login ||!preferred_language || !preferred_categories) {
             return res.status(400).send({
                 success: false,
                 message: 'Please provide all fields'
@@ -76,7 +76,7 @@ const createUser = async (req, res) => {
         const latitude = location.y;
 
         const [data] = await db.query(
-            `INSERT INTO user (username, email, password_hash, location, registration_date, last_login, preferred_language, preferred_categories) VALUES (?, ?, ?, POINT(?, ?), ?, ?, ?, ?)`,
+            `INSERT INTO user (username, email, password, location, registration_date, last_login, preferred_language, preferred_categories) VALUES (?, ?, ?, POINT(?, ?), ?, ?, ?, ?)`,
             [
                 username,
                 email,
@@ -121,7 +121,7 @@ const updateUser = async (req, res) => {
                 message: 'Invalid ID or Provide ID'
             });
         }
-        const { username, email, password_hash, location, registration_date, last_login, preferred_language, preferred_categories } = req.body;
+        const { username, email, password, location, registration_date, last_login, preferred_language, preferred_categories } = req.body;
 
         let hashedPassword = password; // Default to the provided password
         if (password) { // Only hash if a new password is provided
@@ -137,7 +137,7 @@ const updateUser = async (req, res) => {
         }
 
         const [data] = await db.query(
-            `UPDATE user SET username = ?, email = ?, password_hash = ?, location = POINT(?, ?), registration_date = ?, last_login = ?, preferred_language = ?, preferred_categories = ? WHERE user_id = ?`,
+            `UPDATE user SET username = ?, email = ?, password = ?, location = POINT(?, ?), registration_date = ?, last_login = ?, preferred_language = ?, preferred_categories = ? WHERE user_id = ?`,
             [
                 username,
                 email,
