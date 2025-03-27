@@ -89,4 +89,25 @@ const deleteEvent = async (req, res) => {
     }
 };
 
-module.exports = { getAllEvents, getEventById, createEvent, updateEvent, deleteEvent };
+// SEARCH EVENT BY LOCATION
+const searchEventsByLocation = async (req, res) => {
+    try {
+        const { latitude, longitude, radius } = req.query;
+
+        if (!latitude || !longitude || !radius) {
+            return res.status(400).send({ success: false, message: 'Missing required parameters (latitude, longitude, radius)' });
+        }
+
+        const [data] = await db.query(
+            'SELECT event_id, title, ST_Distance_Sphere(location, POINT(?, ?)) / 1000 AS distance_km FROM events WHERE ST_Distance_Sphere(location, POINT(?, ?)) / 1000 <= ?',
+            [longitude, latitude, longitude, latitude, radius]
+        );
+
+        res.status(200).send({ success: true, data });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send({ success: false, message: 'Error searching events by location', error: error.message });
+    }
+};
+
+module.exports = { getAllEvents, getEventById, createEvent, updateEvent, deleteEvent, searchEventsByLocation };

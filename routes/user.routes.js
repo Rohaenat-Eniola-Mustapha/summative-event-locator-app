@@ -1,5 +1,5 @@
 const express = require('express');
-const { getUsers, getUsersByID, createUser, updateUser, deleteUser } = require('../controllers/user.controllers');
+const { getUsers, getUsersByID, createUser, updateUser, deleteUser, loginUser } = require('../controllers/user.controllers');
 
 //router object
 const router = express.Router();
@@ -19,6 +19,9 @@ router.post('/create', createUser);
 router.put('/update/:id', updateUser);
 
 // DELETE USER || DEL
-router.delete('/delete', deleteUser);
+router.delete('/delete/:id', deleteUser);
+
+// LOGIN USER USING BCRYPT
+router.post('/login', loginUser);
 
 module.exports = router;

@@ -1,5 +1,6 @@
 const { create } = require("domain");
 const db = require("../config/database");
+const bcrypt = require('bcrypt');
 
 // GET ALL USERS LIST
 const getUsers = async (req, res) => {
@@ -68,6 +69,8 @@ const createUser = async (req, res) => {
             });
         }
 
+        const hashedPassword = await bcrypt.hash(password, 10);
+
         // Extract longitude and latitude from the location object
         const longitude = location.x;
         const latitude = location.y;
@@ -77,7 +80,7 @@ const createUser = async (req, res) => {
             [
                 username,
                 email,
-                password_hash,
+                hashedPassword,
                 longitude, // Correct order: longitude first
                 latitude, // then latitude
                 registration_date,
@@ -120,6 +123,11 @@ const updateUser = async (req, res) => {
         }
         const { username, email, password_hash, location, registration_date, last_login, preferred_language, preferred_categories } = req.body;
 
+        let hashedPassword = password; // Default to the provided password
+        if (password) { // Only hash if a new password is provided
+            hashedPassword = await bcrypt.hash(password, 10);
+        }
+
         // Validation for location
         if (!location || typeof location !== 'object' || !location.hasOwnProperty('x') || !location.hasOwnProperty('y')) {
             return res.status(400).send({
@@ -133,7 +141,7 @@ const updateUser = async (req, res) => {
             [
                 username,
                 email,
-                password_hash,
+                hashedPassword,
                 location.x,
                 location.y,
                 registration_date,
@@ -198,4 +206,30 @@ const deleteUser = async (req, res) => {
     }
 };
 
-module.exports = { getUsers, getUsersByID, createUser, updateUser, deleteUser };
+const loginUser = async (req, res) => {
+    try {
+        const { email, password } = req.body;
+        if (!email || !password) {
+            return res.status(400).send({ success: false, message: 'Please provide email and password' });
+        }
+
+        const [data] = await db.query('SELECT * FROM user WHERE email = ?', [email]);
+        if (!data || data.length === 0) {
+            return res.status(404).send({ success: false, message: 'User not found' });
+        }
+
+        const user = data[0];
+        const passwordMatch = await bcrypt.compare(password, user.password_hash);
+
+        if (!passwordMatch) {
+            return res.status(401).send({ success: false, message: 'Invalid credentials' });
+        }
+
+        res.status(200).send({ success: true, message: 'Login successful', user: { user_id: user.user_id, username: user.username, email: user.email } });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send({ success: false, message: 'Error logging in', error: error.message });
+    }
+};
+
+module.exports = { getUsers, getUsersByID, createUser, updateUser, deleteUser, loginUser };
