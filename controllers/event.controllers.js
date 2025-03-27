@@ -3,7 +3,7 @@ const db = require('../config/database');
 // GET ALL EVENTS
 const getAllEvents = async (req, res) => {
     try {
-        const [data] = await db.query('SELECT * FROM event');
+        const [data] = await db.query('SELECT * FROM events');
         if (!data || data.length === 0) {
             return res.status(404).send({ success: false, message: 'No events found' });
         }
@@ -18,7 +18,7 @@ const getAllEvents = async (req, res) => {
 const getEventById = async (req, res) => {
     try {
         const { id } = req.params;
-        const [data] = await db.query('SELECT * FROM event WHERE event_id = ?', [id]);
+        const [data] = await db.query('SELECT * FROM events WHERE event_id = ?', [id]);
         if (!data || data.length === 0) {
             return res.status(404).send({ success: false, message: 'Event not found' });
         }
@@ -32,14 +32,15 @@ const getEventById = async (req, res) => {
 // CREATE EVENT
 const createEvent = async (req, res) => {
     try {
-        const { event_name, description, start_time, end_time, location, category_id, organizer_id } = req.body;
-        if (!event_name || !description || !start_time || !end_time || !location || !category_id || !organizer_id) {
+        const { title, description, location, start_time, end_time, created_by, category_id } = req.body;
+        if (!title || !description || !location || !start_time || !end_time || !created_by || !category_id) {
             return res.status(400).send({ success: false, message: 'Missing required fields' });
         }
 
-        const [result] = await db.query('INSERT INTO event (event_name, description, start_time, end_time, location, category_id, organizer_id) VALUES (?, ?, ?, ?, POINT(?, ?), ?, ?)', [
-            event_name, description, start_time, end_time, location.x, location.y, category_id, organizer_id
-        ]);
+        const [result] = await db.query(
+            'INSERT INTO events (title, description, location, start_time, end_time, created_by, created_at, updated_at, category_id) VALUES (?, ?, POINT(?, ?), ?, ?, ?, NOW(), NOW(), ?)',
+            [title, description, location.x, location.y, start_time, end_time, created_by, category_id]
+        );
 
         res.status(201).send({ success: true, message: 'Event created', eventId: result.insertId });
     } catch (error) {
@@ -52,14 +53,15 @@ const createEvent = async (req, res) => {
 const updateEvent = async (req, res) => {
     try {
         const { id } = req.params;
-        const { event_name, description, start_time, end_time, location, category_id, organizer_id } = req.body;
-        if (!event_name || !description || !start_time || !end_time || !location || !category_id || !organizer_id) {
+        const { title, description, location, start_time, end_time, created_by, category_id } = req.body;
+        if (!title || !description || !location || !start_time || !end_time || !created_by || !category_id) {
             return res.status(400).send({ success: false, message: 'Missing required fields' });
         }
 
-        const [result] = await db.query('UPDATE event SET event_name = ?, description = ?, start_time = ?, end_time = ?, location = POINT(?, ?), category_id = ?, organizer_id = ? WHERE event_id = ?', [
-            event_name, description, start_time, end_time, location.x, location.y, category_id, organizer_id, id
-        ]);
+        const [result] = await db.query(
+            'UPDATE events SET title = ?, description = ?, location = POINT(?, ?), start_time = ?, end_time = ?, created_by = ?, updated_at = NOW(), category_id = ? WHERE event_id = ?',
+            [title, description, location.x, location.y, start_time, end_time, created_by, category_id, id]
+        );
 
         if (result.affectedRows === 0) {
             return res.status(404).send({ success: false, message: 'Event not found' });
@@ -76,7 +78,7 @@ const updateEvent = async (req, res) => {
 const deleteEvent = async (req, res) => {
     try {
         const { id } = req.params;
-        const [result] = await db.query('DELETE FROM event WHERE event_id = ?', [id]);
+        const [result] = await db.query('DELETE FROM events WHERE event_id = ?', [id]);
         if (result.affectedRows === 0) {
             return res.status(404).send({ success: false, message: 'Event not found' });
         }

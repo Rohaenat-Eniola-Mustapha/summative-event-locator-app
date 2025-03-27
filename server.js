@@ -1,8 +1,10 @@
+// server.js
+
 const express = require('express');
 const dotenv = require('dotenv');
 const colors = require('colors');
 const morgan = require('morgan');
-const db = require('./config/database'); // Use db consistently
+const db = require('./config/database');
 const userRoutes = require('./routes/user.routes');
 const eventRoutes = require('./routes/event.routes');
 const eventCategoryRoutes = require('./routes/eventCategory.routes');
@@ -22,7 +24,7 @@ app.use(morgan('dev'));
 
 // routes
 app.use('/api/v1/user', require('./routes/user.routes'));
-app.use('/api/v1/event', require('./routes/event.routes'));
+app.use('/api/v1/event', eventRoutes);
 app.use('/api/v1/event_categories', eventCategoryRoutes);
 
 app.get('/', (req, res) => {
@@ -30,7 +32,7 @@ app.get('/', (req, res) => {
 });
 
 // conditionally listen
-db.query('SELECT 1') // Use db consistently
+db.query('SELECT 1')
     .then(() => {
         // My SQL
         console.log('MySQL DB Connected'.bgCyan.white);

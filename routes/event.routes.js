@@ -1,5 +1,3 @@
-// event.routes.js
-
 const express = require('express');
 const { getAllEvents, getEventById, createEvent, updateEvent, deleteEvent } = require('../controllers/event.controllers');
 
