@@ -165,12 +165,37 @@ const updateUser = async (req, res) => {
 };
 
 // DELETE USER
-const deleteUser = async (req,res) => {
+const deleteUser = async (req, res) => {
     try {
-        
+        const user_id = req.params.id;
+        if (!user_id) {
+            return res.status(400).send({
+                success: false,
+                message: 'Invalid or missing user ID',
+            });
+        }
+
+        const [result] = await db.query('DELETE FROM user WHERE user_id = ?', [user_id]);
+
+        if (result.affectedRows === 0) {
+            return res.status(404).send({
+                success: false,
+                message: 'User not found',
+            });
+        }
+
+        res.status(200).send({
+            success: true,
+            message: 'User deleted successfully',
+        });
     } catch (error) {
-        
+        console.error('Error deleting user:', error);
+        res.status(500).send({
+            success: false,
+            message: 'Error deleting user',
+            error: error.message,
+        });
     }
-}
+};
 
 module.exports = { getUsers, getUsersByID, createUser, updateUser, deleteUser };

@@ -2,7 +2,10 @@ const express = require('express');
 const dotenv = require('dotenv');
 const colors = require('colors');
 const morgan = require('morgan');
-const mySqlPool = require('./config/database');
+const db = require('./config/database'); // Use db consistently
+const userRoutes = require('./routes/user.routes');
+const eventRoutes = require('./routes/event.routes');
+const eventCategoryRoutes = require('./routes/eventCategory.routes');
 
 // configure dotenv
 dotenv.config();
@@ -19,13 +22,15 @@ app.use(morgan('dev'));
 
 // routes
 app.use('/api/v1/user', require('./routes/user.routes'));
+app.use('/api/v1/event', require('./routes/event.routes'));
+app.use('/api/v1/event_categories', eventCategoryRoutes);
 
 app.get('/', (req, res) => {
     res.send('<h1>Welcome to The Event Locator App</h1>');
 });
 
 // conditionally listen
-mySqlPool.query('SELECT 1')
+db.query('SELECT 1') // Use db consistently
     .then(() => {
         // My SQL
         console.log('MySQL DB Connected'.bgCyan.white);
