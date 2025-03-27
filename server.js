@@ -1,5 +1,3 @@
-// server.js
-
 const express = require('express');
 const dotenv = require('dotenv');
 const colors = require('colors');
@@ -9,6 +7,7 @@ const userRoutes = require('./routes/user.routes');
 const eventRoutes = require('./routes/event.routes');
 const eventCategoryRoutes = require('./routes/eventCategory.routes');
 const notificationRoutes = require('./routes/notifications.routes');
+const eventRatingsRoutes = require('./routes/eventRatings.routes');
 
 // configure dotenv
 dotenv.config();
@@ -28,6 +27,7 @@ app.use('/api/v1/user', require('./routes/user.routes'));
 app.use('/api/v1/event', eventRoutes);
 app.use('/api/v1/event_categories', eventCategoryRoutes);
 app.use('/api/v1/notifications', notificationRoutes);
+app.use('/api/v1/event_ratings', eventRatingsRoutes);
 
 app.get('/', (req, res) => {
     res.send('<h1>Welcome to The Event Locator App</h1>');
