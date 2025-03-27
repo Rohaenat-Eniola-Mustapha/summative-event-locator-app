@@ -1,0 +1,21 @@
+{
+    "user_not_found": "Usuario no encontrado",
+    "invalid_credentials": "Credenciales inválidas",
+    "login_successful": "Inicio de sesión exitoso",
+    "error_logging_in": "Error al iniciar sesión",
+    "please_provide_all_fields": "Por favor, proporcione todos los campos",
+    "new_user_created": "Nuevo registro de usuario creado",
+    "error_creating_user": "Error al crear usuario",
+    "invalid_id_or_provide_id": "ID inválido o proporcione ID",
+    "user_details_updated": "Detalles del usuario actualizados",
+    "error_updating_user": "Error al actualizar usuario",
+    "invalid_or_missing_user_id": "ID de usuario inválido o faltante",
+    "user_deleted_successfully": "Usuario eliminado con éxito",
+    "error_deleting_user": "Error al eliminar usuario",
+    "all_users_records": "Todos los registros de usuarios",
+    "error_get_all_users": "Error al obtener todos los usuarios",
+    "error_get_user_by_id": "Error al obtener usuario por ID",
+    "error_insert_query": "Error en la consulta de inserción",
+    "invalid_or_missing_location": "Ubicación inválida o faltante",
+    "error_updating_data": "Error al actualizar datos"
+  }

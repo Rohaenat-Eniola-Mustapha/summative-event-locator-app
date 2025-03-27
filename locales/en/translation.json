@@ -1,0 +1,15 @@
+{
+    "user_not_found": "User not found",
+    "invalid_credentials": "Invalid credentials",
+    "login_successful": "Login successful",
+    "error_logging_in": "Error logging in",
+    "please_provide_all_fields": "Please provide all fields",
+    "new_user_created": "New User Record Created",
+    "error_creating_user": "Error In Creating User",
+    "invalid_id_or_provide_id": "Invalid ID or Provide ID",
+    "user_details_updated": "User Details Updated",
+    "error_updating_user": "Error in Updating User",
+    "invalid_or_missing_user_id": "Invalid or missing user ID",
+    "user_deleted_successfully": "User deleted successfully",
+    "error_deleting_user": "Error deleting user"
+}

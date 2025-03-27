@@ -1,27 +1,30 @@
 const { create } = require("domain");
 const db = require("../config/database");
 const bcrypt = require('bcrypt');
+const i18n = require('../config/i18n')
 
 // GET ALL USERS LIST
 const getUsers = async (req, res) => {
     try {
         const [data] = await db.query('SELECT * FROM user');
+        const language = req.headers['accept-language'] || 'en'; // Detect language
+        i18n.changeLanguage(language); // Set language for i18next
         if (!data || data.length === 0) {
             return res.status(404).send({
                 success: false,
-                message: 'No Records Found'
+                message: i18n.t('user_not_found') // Use i18n.t()
             });
         }
         res.status(200).send({
             success: true,
-            message: 'All Users Records',
+            message: i18n.t('all_users_records'), //use i18n.t()
             data: data,
         });
     } catch (error) {
         console.log(error);
         res.status(500).send({
             success: false,
-            message: 'Error in Get All Users API',
+            message: i18n.t('error_get_all_users'), //use i18n.t()
             error
         });
     }
@@ -31,10 +34,12 @@ const getUsers = async (req, res) => {
 const getUsersByID = async (req, res) => {
     try {
         const user_id = req.params.id;
+        const language = req.headers['accept-language'] || 'en'; // Detect language
+        i18n.changeLanguage(language); // Set language for i18next
         if (!user_id) {
             return res.status(400).send({
                 success: false,
-                message: 'Invalid Or Provide User id'
+                message: i18n.t('invalid_id_or_provide_id') //use i18n.t()
             });
         }
         const [data] = await db.query('SELECT * FROM user WHERE user_id = ?', [user_id]);
@@ -42,7 +47,7 @@ const getUsersByID = async (req, res) => {
         if (!data || data.length === 0) {
             return res.status(404).send({
                 success: false,
-                message: 'No Records Found'
+                message: i18n.t('user_not_found') //use i18n.t()
             });
         }
         res.status(200).send({
@@ -53,7 +58,7 @@ const getUsersByID = async (req, res) => {
         console.log(error);
         res.status(500).send({
             success: false,
-            message: 'Error in Get user by id'
+            message: i18n.t('error_get_user_by_id') //use i18n.t()
         });
     }
 };
@@ -62,10 +67,12 @@ const getUsersByID = async (req, res) => {
 const createUser = async (req, res) => {
     try {
         const { username, email, password, location, registration_date, last_login, preferred_language, preferred_categories } = req.body;
-        if (!username || !email || !password || !location || !registration_date || !last_login ||!preferred_language || !preferred_categories) {
+        const language = req.headers['accept-language'] || 'en'; // Detect language
+        i18n.changeLanguage(language); // Set language for i18next
+        if (!username || !email || !password || !location || !registration_date || !last_login || !preferred_language || !preferred_categories) {
             return res.status(400).send({
                 success: false,
-                message: 'Please provide all fields'
+                message: i18n.t('please_provide_all_fields') //use i18n.t()
             });
         }
 
@@ -81,8 +88,8 @@ const createUser = async (req, res) => {
                 username,
                 email,
                 hashedPassword,
-                longitude, // Correct order: longitude first
-                latitude, // then latitude
+                longitude,
+                latitude,
                 registration_date,
                 last_login,
                 preferred_language,
@@ -93,19 +100,19 @@ const createUser = async (req, res) => {
         if (data.affectedRows === 0) {
             return res.status(500).send({
                 success: false,
-                message: 'Error in INSERT QUERY'
+                message: i18n.t('error_insert_query')//use i18n.t()
             });
         }
 
         res.status(201).send({
             success: true,
-            message: 'New User Record Created',
+            message: i18n.t('new_user_created') //use i18n.t()
         });
     } catch (error) {
         console.log(error);
         res.status(500).send({
             success: false,
-            message: 'Error In Creating User',
+            message: i18n.t('error_creating_user'), //use i18n.t()
             error
         });
     }
@@ -115,10 +122,12 @@ const createUser = async (req, res) => {
 const updateUser = async (req, res) => {
     try {
         const user_id = req.params.id;
+        const language = req.headers['accept-language'] || 'en'; // Detect language
+        i18n.changeLanguage(language); // Set language for i18next
         if (!user_id) {
             return res.status(400).send({
                 success: false,
-                message: 'Invalid ID or Provide ID'
+                message: i18n.t('invalid_id_or_provide_id') //use i18n.t()
             });
         }
         const { username, email, password, location, registration_date, last_login, preferred_language, preferred_categories } = req.body;
@@ -132,7 +141,7 @@ const updateUser = async (req, res) => {
         if (!location || typeof location !== 'object' || !location.hasOwnProperty('x') || !location.hasOwnProperty('y')) {
             return res.status(400).send({
                 success: false,
-                message: 'Invalid or missing location object'
+                message: i18n.t('invalid_or_missing_location') //use i18n.t()
             });
         }
 
@@ -155,18 +164,18 @@ const updateUser = async (req, res) => {
         if (data.affectedRows === 0) {
             return res.status(500).send({
                 success: false,
-                message: 'Error in Updating Data'
+                message: i18n.t('error_updating_data') //use i18n.t()
             });
         }
         res.status(200).send({
             success: true,
-            message: 'User Details Updated',
+            message: i18n.t('user_details_updated') //use i18n.t()
         });
     } catch (error) {
         console.log(error);
         res.status(500).send({
             success: false,
-            message: 'Error in Updating User',
+            message: i18n.t('error_updating_user'), //use i18n.t()
             error
         });
     }
@@ -176,10 +185,13 @@ const updateUser = async (req, res) => {
 const deleteUser = async (req, res) => {
     try {
         const user_id = req.params.id;
+        const language = req.headers['accept-language'] || 'en'; // Detect language
+        i18n.changeLanguage(language); // Set language for i18next
+
         if (!user_id) {
             return res.status(400).send({
                 success: false,
-                message: 'Invalid or missing user ID',
+                message: i18n.t('invalid_or_missing_user_id') // Use i18n.t()
             });
         }
 
@@ -188,19 +200,19 @@ const deleteUser = async (req, res) => {
         if (result.affectedRows === 0) {
             return res.status(404).send({
                 success: false,
-                message: 'User not found',
+                message: i18n.t('user_not_found') // Use i18n.t()
             });
         }
 
         res.status(200).send({
             success: true,
-            message: 'User deleted successfully',
+            message: i18n.t('user_deleted_successfully') // Use i18n.t()
         });
     } catch (error) {
         console.error('Error deleting user:', error);
         res.status(500).send({
             success: false,
-            message: 'Error deleting user',
+            message: i18n.t('error_deleting_user'), // Use i18n.t()
             error: error.message,
         });
     }
@@ -209,26 +221,29 @@ const deleteUser = async (req, res) => {
 const loginUser = async (req, res) => {
     try {
         const { email, password } = req.body;
+        const language = req.headers['accept-language'] || 'en'; // Detect language
+        i18n.changeLanguage(language); // Set language for i18next
+
         if (!email || !password) {
-            return res.status(400).send({ success: false, message: 'Please provide email and password' });
+            return res.status(400).send({ success: false, message: i18n.t('please_provide_all_fields') }); // Use i18n.t()
         }
 
         const [data] = await db.query('SELECT * FROM user WHERE email = ?', [email]);
         if (!data || data.length === 0) {
-            return res.status(404).send({ success: false, message: 'User not found' });
+            return res.status(404).send({ success: false, message: i18n.t('user_not_found') }); // Use i18n.t()
         }
 
         const user = data[0];
         const passwordMatch = await bcrypt.compare(password, user.password_hash);
 
         if (!passwordMatch) {
-            return res.status(401).send({ success: false, message: 'Invalid credentials' });
+            return res.status(401).send({ success: false, message: i18n.t('invalid_credentials') }); // Use i18n.t()
         }
 
-        res.status(200).send({ success: true, message: 'Login successful', user: { user_id: user.user_id, username: user.username, email: user.email } });
+        res.status(200).send({ success: true, message: i18n.t('login_successful'), user: { user_id: user.user_id, username: user.username, email: user.email } }); // Use i18n.t()
     } catch (error) {
         console.error(error);
-        res.status(500).send({ success: false, message: 'Error logging in', error: error.message });
+        res.status(500).send({ success: false, message: i18n.t('error_logging_in'), error: error.message }); // Use i18n.t()
     }
 };
 

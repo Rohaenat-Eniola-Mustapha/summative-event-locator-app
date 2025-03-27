@@ -1,0 +1,15 @@
+{
+    "user_not_found": "Utilisateur non trouvé",
+    "invalid_credentials": "Identifiants invalides",
+    "login_successful": "Connexion réussie",
+    "error_logging_in": "Erreur de connexion",
+    "please_provide_all_fields": "Veuillez fournir tous les champs",
+    "new_user_created": "Nouvel utilisateur créé",
+    "error_creating_user": "Erreur lors de la création de l'utilisateur",
+    "invalid_id_or_provide_id": "ID invalide ou fournir un ID",
+    "user_details_updated": "Détails de l'utilisateur mis à jour",
+    "error_updating_user": "Erreur lors de la mise à jour de l'utilisateur",
+    "invalid_or_missing_user_id": "ID utilisateur invalide ou manquant",
+    "user_deleted_successfully": "Utilisateur supprimé avec succès",
+    "error_deleting_user": "Erreur lors de la suppression de l'utilisateur"
+}
