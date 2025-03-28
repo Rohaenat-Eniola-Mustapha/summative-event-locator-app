@@ -4,7 +4,7 @@
   "description": "",
   "main": "generate-secret.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest --watchAll --verbose",
     "server": "nodemon server.js"
   },
   "keywords": [],
