@@ -88,7 +88,7 @@ The Summative Event Locator App is a backend API built with Node.js and Express.
 ### User Routes
 
 - `POST /api/v1/user/create`: Create a new user.
-- `POST /api/v1/login/login`: Login a user.
+- `POST /api/v1/login`: Login a user.
 - `GET /api/v1/user/getall`: Get all users.
 - `GET /api/v1/user/get/:id`: Get a user by ID.
 - `PUT /api/v1/user/update/:id`: Update a user.
@@ -103,6 +103,94 @@ The Summative Event Locator App is a backend API built with Node.js and Express.
 - `DELETE /api/v1/events/delete/:id`: Delete an event.
 - `GET /api/v1/events/search`: Search events.
 
-## Testing
+## Test Results Summary
 
-- Currently testing is not working, and is under development.
+All tests for the User Authentication suite passed successfully.
+
+```bash
+
+PASS test/user.test.js
+User Authentication
+√ should register a new user (134 ms)
+√ should log in a user (163 ms)
+√ should fail login with incorrect password (157 ms)
+
+```
+
+## Initial Issues and Troubleshooting
+
+During the initial test runs, several issues were identified and addressed:
+
+### 1. Duplicate Entry Errors
+
+- **Problem:** Tests were failing due to duplicate entries for the `user.username` key in the database.
+- **Error Message:** `Error: Duplicate entry 'testuser' for key 'user.username'`
+- **Solution:** Modified the test setup to generate unique usernames for each test execution using UUIDs.
+
+    ```javascript
+    const { v4: uuidv4 } = require('uuid');
+    const uniqueUsername = `testuser-${uuidv4()}`;
+
+    ```
+
+### 2. Incorrect Response Messages
+
+- **Problem:** Expected response messages in tests did not match the actual messages returned by the API.
+- **Solution:** Updated the expected messages in test assertions to match the API responses.
+
+    ```javascript
+    expect(response.body.message).toBe('New User Record Created'); // Example update
+    ```
+
+### 3. 404 Errors for Login Routes
+
+- **Problem:** Login routes were returning 404 errors, indicating they were not found.
+- **Solution:** Verified route definitions and registration in `user.routes.js` and `server.js`. Ensured the server was restarted after changes. Also verified the app variable in the test file was the same app variable that the routes are registered to.
+
+### 4. Foreign Key Constraint (Events)
+
+- **Problem:** Unable to drop the `user` table due to a foreign key constraint from the `events` table.
+- **Solution:** Modified the `afterAll` function in `test/user.test.js` to drop the `events` table before the `user` table.
+
+    ```javascript
+    afterAll(async () => {
+        await db.query('DROP TABLE IF EXISTS user_favorites');
+        await db.query('DROP TABLE IF EXISTS notifications');
+        await db.query('DROP TABLE IF EXISTS event_ratings');
+        await db.query('DROP TABLE IF EXISTS events');
+        await db.query('DROP TABLE IF EXISTS user');
+        await db.end();
+        server.close();
+    });
+    ```
+
+### 5. Worker Process Failure Warning
+
+- **Problem:** A warning message "A worker process has failed to exit gracefully..." appeared.
+- **Possible Causes:** Potential resource leaks, lingering timers, or unclosed database/redis connections.
+- **Troubleshooting Steps:**
+  - Run tests with `--detectOpenHandles` to identify open handles.
+  - Check for active timers and ensure they are properly cleared or `.unref()` is called.
+  - Verify that database and redis connections are properly closed.
+- **Note:** Even though the tests passed, this warning should be investigated further to prevent future issues.
+
+    ```bash
+    npx jest --detectOpenHandles
+    ```
+
+## Redis Connection
+
+- The tests log that redis is connected.
+
+    ```bash
+    console.log
+    Redis Connected
+    at log (config/redis.js:14:13)
+    ```
+
+## Recommendations
+
+- Continue to monitor for the "worker process failed to exit gracefully" warning and address any identified resource leaks.
+- Ensure consistent response messages between the API and test assertions.
+- Implement robust error handling in both the API and tests.
+- Maintain thorough documentation for all API endpoints and test cases.

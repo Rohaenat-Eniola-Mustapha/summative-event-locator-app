@@ -22,6 +22,6 @@ router.put('/update/:id', updateUser);
 router.delete('/delete/:id', deleteUser);
 
 // LOGIN USER USING BCRYPT
-router.post('/login/login', loginUser);
+router.post('/login', loginUser);
 
 module.exports = router;
